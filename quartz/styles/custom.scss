@@ -1,3 +1,28 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+/* ---------------------------------------------------------------------------
+ * promeV overrides
+ *
+ * CASCADE NOTE, read before adding anything here:
+ * this file is compiled into index.css, which the page links BEFORE every
+ * component-*.css. So a plain `.foo` override loses to a component's own `.foo`
+ * at equal specificity. Raise specificity (doubling the class is the tidiest
+ * way) rather than reaching for !important.
+ * ------------------------------------------------------------------------ */
+
+/* Site title.
+ * @quartz-community/page-title ships `.page-title { font-size: 1.75rem }`. At 28px
+ * on a ~390px phone, "Prometheus Vault" wraps to two lines and crowds the search
+ * box - the header ends up taller than the first line of actual content.
+ *
+ * clamp() rather than a breakpoint step, so it scales smoothly instead of
+ * snapping at 800px:
+ *   390px viewport -> 3.6vw = 14px, clamped up to the 1rem floor
+ *   800px viewport -> 3.6vw = 28.8px, clamped down to the 1.4rem ceiling
+ * Desktop keeps the original 1.75rem. */
+@media all and #{$mobile} {
+  .page-title.page-title {
+    font-size: clamp(1rem, 3.6vw, 1.4rem);
+    line-height: 1.15;
+  }
+}
