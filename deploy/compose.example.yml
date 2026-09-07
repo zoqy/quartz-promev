@@ -1,0 +1,59 @@
+# Example compose file. COPY THIS, do not edit it in place — the real one belongs
+# outside this repo, because it carries two things that must not be published:
+# the host address the site binds to, and the path to the vault on that host.
+#
+#     cp deploy/compose.example.yml /somewhere/private/compose.yml
+#     # fill in the two placeholders, then:
+#     docker compose up -d
+#
+# Every value below is a placeholder. Nothing here describes a real host.
+
+services:
+  quartz:
+    image: promev-quartz
+    # Build from a checkout of this repo. Drop `build:` and pull a pushed image
+    # instead if you build elsewhere.
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    container_name: promev-quartz
+    restart: unless-stopped
+
+    ports:
+      # ⚠️ SECURITY BOUNDARY — read before editing.
+      #
+      # The leading address is what keeps this private. Binding to a single
+      # VPN/tailnet address means the site is reachable only over that network.
+      # Shortening this to "8080:8080" binds 0.0.0.0 and publishes the vault to
+      # every device on the LAN, and to the internet if the router forwards it.
+      #
+      # Docker writes its own iptables rules and bypasses ufw/firewalld, so a
+      # host firewall will NOT save you from that mistake.
+      - "<VPN_IP>:8080:8080"
+
+    volumes:
+      # The vault, read-only. `:ro` is not a formality: Quartz runs a file watcher
+      # over this directory, and the container must never be able to write back
+      # into the notes it is rendering.
+      - <PATH_TO_VAULT>:/app/content:ro
+
+    environment:
+      # Rewritten into quartz.config.yaml at container start by deploy/entrypoint.sh.
+      # Affects absolute URLs only — Open Graph tags, RSS, sitemap — never internal
+      # links, so a wrong value degrades social previews rather than breaking the site.
+      - QUARTZ_BASE_URL=<HOSTNAME_OR_IP>:8080
+
+    # Quartz rebuilds on every vault change; on a small box that spike is the one
+    # thing likely to disturb its neighbours. Tune or drop to taste.
+    mem_limit: 1g
+
+    healthcheck:
+      # `quartz build --serve` has no health endpoint, so this just asks the site
+      # for its home page.
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:8080/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      # The first build has to run before anything answers, so start_period is
+      # generous — a slow box with a large vault can take a couple of minutes.
+      start_period: 180s
+      interval: 60s
+      timeout: 15s
+      retries: 3

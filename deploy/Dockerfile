@@ -20,7 +20,11 @@ COPY package-lock.json* .
 COPY .npmrc* .
 COPY quartz/ ./quartz/
 COPY quartz.lock.json* .
-RUN npm install && npx quartz plugin install
+# `npm ci` rather than `npm install`: it installs exactly what package-lock.json pins and
+# fails if the lock and package.json disagree, instead of quietly resolving new versions
+# into the image. Every plugin here is an npm range (^0.1.0 and friends), so `npm install`
+# in a fresh container can pick up releases the site was never checked against.
+RUN npm ci && npx quartz plugin install
 
 FROM node:22-slim
 WORKDIR /app
