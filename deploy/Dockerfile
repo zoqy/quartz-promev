@@ -27,6 +27,20 @@ COPY quartz.lock.json* .
 RUN npm ci && npx quartz plugin install
 
 FROM node:22-slim
+
+# git is needed at RUN TIME, not just to install plugins. The created-modified-date plugin
+# resolves note dates from the vault's git history, and the vault is a bind mount that
+# carries its own .git. Without git here the plugin logs "couldn't find git repository for
+# content" and silently degrades to file mtimes, which on a bind mount are whatever the
+# host last wrote rather than when the note was actually edited.
+#
+# `git config --global --add safe.directory` because the mount is owned by the host user,
+# not by the container's, and git refuses to read a repository it considers foreign-owned.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && git config --global --add safe.directory /app/content
+
 WORKDIR /app
 COPY --from=builder /app/ /app/
 COPY . .
