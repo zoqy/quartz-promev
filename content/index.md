@@ -1,12 +1,10 @@
 ---
-title: Welcome to the Vault
+title: Prometheus Vault
 author: Theo
 created: 2026-01-01
 tags: [meta, index]
 description: A demonstration vault — invented notes about running a small homelab and keeping notes about it.
 ---
-
-# Prometheus Vault
 
 A knowledge base kept by Theo, published with Quartz and readable from any device on the tailnet.
 
