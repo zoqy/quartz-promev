@@ -2,6 +2,10 @@
 .gitignore
 node_modules
 public
+# side-by-side palette/style comparison builds (npx quartz build --output public-<name>)
+public-*
+# scratch space: design candidates, working renders, anything not yet chosen
+local/
 prof
 tsconfig.tsbuildinfo
 .obsidian

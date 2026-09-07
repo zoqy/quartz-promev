@@ -25,4 +25,56 @@
     font-size: clamp(1rem, 3.6vw, 1.4rem);
     line-height: 1.15;
   }
+
+  /* The clamp above shrinks the title enough that it fits on one line, so the
+   * mark no longer has a two-line block to span - keep it to roughly the cap
+   * height of the single line it sits beside. */
+  .page-title.page-title > a::before {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+
+/* Site mark, sitting left of the wordmark.
+ *
+ * Done here rather than by forking @quartz-community/page-title: that plugin ships
+ * compiled `dist/` only, so customising it means vendoring a build artefact and
+ * re-vendoring it on every plugin bump. A CSS rule against the markup it emits
+ * (`h2.page-title > a`) survives both plugin updates and `git merge upstream/v5`.
+ *
+ * flex on the <a> - not an inline-block ::before - so a wrapped second line of the
+ * title aligns under the first word instead of running back under the mark.
+ *
+ * mask rather than background-image: the mark is painted in `--secondary`, so it
+ * follows the theme accent and recolours in dark mode for free. The cost is that
+ * the source SVG must be a single-colour silhouette; only its alpha survives. */
+.page-title.page-title > a {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+}
+
+.page-title.page-title > a::before {
+  content: "";
+  flex: 0 0 auto;
+  /* Sized in em against the title, so it tracks the clamp() below on mobile.
+   *
+   * 2.1em is deliberate, not arbitrary: "Prometheus Vault" wraps to two lines in
+   * the 320px sidebar, and the mark is scaled to span that two-line block so
+   * `align-items: center` has something to centre it against. Undersize it and
+   * the mark floats against the first line only, which is the misalignment this
+   * replaced.
+   *
+   * `align-self: stretch` with `aspect-ratio: 1` is the tempting version of this
+   * - it would track the line count on its own - but the stretched cross size
+   * never resolves into a width here, so the element collapsed to zero and the
+   * mark disappeared entirely. Explicit sizes with a breakpoint, verified in the
+   * browser at both widths, is the version that actually renders. */
+  width: 2.1em;
+  height: 2.1em;
+  background-color: var(--secondary);
+  /* relative to index.css, which is emitted at the output root - so this stays
+   * correct if the site is ever served under a subpath. */
+  -webkit-mask: url("static/logo.svg") center / contain no-repeat;
+  mask: url("static/logo.svg") center / contain no-repeat;
 }
