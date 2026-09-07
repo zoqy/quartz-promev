@@ -1,11 +1,25 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
   pageTitle: Prometheus Vault
-  pageTitleSuffix: " | Prometheus Vault"
+  # The browser tab shows `<note title><suffix>`, so the home note is titled
+  # "Prometheus Vault" and this completes it to "Prometheus Vault | Private Viewing".
+  # Sub-pages read "<note> | Private Viewing", which keeps tabs, bookmarks and history
+  # distinguishable - a fixed site-wide title would make every one of them identical.
+  pageTitleSuffix: " | Private Viewing"
   enableSPA: true
   enablePopovers: true
-  analytics:
-    provider: plausible
+  # DISABLED DELIBERATELY. Do not set a provider on this site.
+  #
+  # `provider: plausible` was inherited unchanged from upstream's
+  # quartz.config.default.yaml - it was never a choice made for this vault. Left on, it
+  # injects a script from plausible.io into every page and calls plausible('pageview')
+  # with `data-domain` set to `location.hostname` (see the emitter in
+  # quartz/plugins/emitters/componentResources.ts). On a private vault that means the
+  # host name and every note path visited are sent to a third party on every page view.
+  #
+  # Note that it needs no configured domain or key to do this - it reads the hostname at
+  # run time - so "nothing is configured, therefore nothing leaks" is not true here.
+  analytics: null
   locale: en-US
   baseUrl: localhost:8080
   ignorePatterns:
@@ -17,29 +31,40 @@ configuration:
     cdnCaching: true
     typography:
       header: Schibsted Grotesk
-      body: Source Sans Pro
+      body: Instrument Sans
       code: IBM Plex Mono
     colors:
+      # Red Graphite: warm off-white canvas, graphite ink, brick-red accent.
+      # Derived from seanwcom/Red-Graphite-for-Obsidian (base #292C2E, accent #cb4c48).
+      # The accent is darkened for `secondary`/`tertiary` because Quartz uses those as
+      # *link text* colour: the brand #cb4c48 lands at 4.07:1 on this canvas, under
+      # WCAG AA. #c73f3b holds the same hue/saturation (2deg, 56%) at 4.51:1.
+      #
+      # The rejected alternative, kept here because it was built and compared: a Claude
+      # cream variant from design-md/claude/DESIGN.md - canvas #faf9f5, lightgray
+      # #e2dad1, gray #8e8b82, darkgray #3d3d3a, dark #141413, secondary #b55839,
+      # tertiary #97492f; dark mode #181715 / #2e2c28 / #6c6a64 / #c8c4bb / #faf9f5 /
+      # #d98b6f / #e8a55a.
       lightMode:
-        light: "#faf8f8"
-        lightgray: "#e5e5e5"
-        gray: "#b8b8b8"
-        darkgray: "#4e4e4e"
-        dark: "#2b2b2b"
-        secondary: "#284b63"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#fff23688"
+        light: "#f5f3f1"
+        lightgray: "#ded8d1"
+        gray: "#8b8580"
+        darkgray: "#3c3f41"
+        dark: "#292c2e"
+        secondary: "#c73f3b"
+        tertiary: "#a73330"
+        highlight: rgba(199, 63, 59, 0.1)
+        textHighlight: "#cb4c4855"
       darkMode:
-        light: "#161618"
-        lightgray: "#393639"
-        gray: "#646464"
-        darkgray: "#d4d4d4"
-        dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#b3aa0288"
+        light: "#1f2224"
+        lightgray: "#34383b"
+        gray: "#6b7073"
+        darkgray: "#d6d3d0"
+        dark: "#eceae8"
+        secondary: "#e0685f"
+        tertiary: "#f08a80"
+        highlight: rgba(224, 104, 95, 0.13)
+        textHighlight: "#e0685f55"
 plugins:
   - source: "@quartz-community/created-modified-date"
     enabled: true
