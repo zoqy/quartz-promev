@@ -78,3 +78,42 @@
   -webkit-mask: url("static/logo.svg") center / contain no-repeat;
   mask: url("static/logo.svg") center / contain no-repeat;
 }
+
+/* Tags in the note-properties panel (quartz-promev issue #1).
+ * @quartz-community/note-properties ships `.note-properties-tags { display:
+ * inline-flex }` with no wrap set, so a note with more than a couple of tags
+ * runs its tag list past the edge of the properties table's value column
+ * instead of onto a second line - the "overflow, wrap awkwardly" from the
+ * report. Same node_modules-ships-dist/-only situation as the page-title
+ * fix above: fixed here rather than in the package, which doesn't survive
+ * `npm install`. Doubled classes to clear the (0,2,0)/(0,3,0) specificity of
+ * the component's own rules per the cascade note at the top of this file.
+ *
+ * Wrap is unconditional (not just under `$mobile`) - it's a no-op wherever
+ * the tags already fit on one line, and a narrow desktop window has the same
+ * overflow risk as a phone. */
+.note-properties .note-properties-tags.note-properties-tags {
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+/* The comma separators read fine in a single inline run, but once tags wrap
+ * they end up stranded at line breaks with nothing after them - each tag is
+ * already its own visually distinct chip (background + radius, below), so
+ * the separator stops earning its keep once wrapping is on. */
+.note-properties .note-properties-tags.note-properties-tags .note-properties-separator {
+  display: none;
+}
+
+/* Tap target: the component's own chip padding (0.1rem 0.4rem) sits well
+ * under the ~44px minimum touch target the report asks for. Scoped to
+ * mobile - desktop chips don't need pointer-sized hit areas, and this size
+ * would look oversized next to the rest of the properties table there. */
+@media all and #{$mobile} {
+  .note-properties .note-properties-tags .tag-link.tag-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.3rem 0.7rem;
+  }
+}
