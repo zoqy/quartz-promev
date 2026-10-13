@@ -16,3 +16,9 @@ replit.nix
 .quartz/
 quartz/cli/tui/dist/
 .turbo/
+# filled-in deployment config: names real bind addresses/host paths, never committed (public repo)
+compose.yml
+deploy/*.local.yml
+.env
+.env.*
+!.env.example

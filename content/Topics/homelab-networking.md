@@ -14,9 +14,9 @@ Fixture content. The point of this note is the *shapes* below, not the words.
 
 | Interface | Address | Role | State | Notes that run long |
 |---|---|---|---|---|
-| `wlp2s0` | 192.168.x.x/24 | LAN | up | The only working NIC on the machine |
+| `wlan0` | 192.168.x.x/24 | LAN | up | Wireless uplink for the example host |
 | `tailscale0` | 100.x.x.x/32 | Tailnet | up | How everything is actually reached |
-| `enp3s0` | — | unused | down | Failed hardware, never to be used again |
+| `eth0` | — | unused | down | Wired port, not connected in this example |
 | `docker0` | 172.17.x.x/16 | bridge | down | Created by the container runtime |
 
 ## A long unbroken code line

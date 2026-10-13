@@ -16,7 +16,8 @@
 > and fill it in outside the repo.
 >
 > Divergence from upstream is confined to `deploy/`, `quartz.config.yaml`,
-> `quartz/styles/custom.scss`, `quartz/static/`, and the fixture vault in `content/`, so
+> `quartz/styles/custom.scss`, `quartz/static/`, `.gitignore`, `.dockerignore`, and the fixture
+> vault in `content/`, so
 > `git fetch upstream && git merge upstream/v5` stays cheap.
 
 ---
